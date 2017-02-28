@@ -1,2 +1,4 @@
-# course-explorer
-Automatically check and register courses for UIUC students
+# UIUC-Course-Explorer
+ Automatically check and register courses for students
+ 
+Created by Xavier Chi.
