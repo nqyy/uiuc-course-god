@@ -1,8 +1,10 @@
 # course registration helper for UIUC
 # support multiple crn for different courses
 # author: Tianhao Chi
-# command: python go.py netid password crn1 ...
+# usage: python go.py netid password crn1 ...
 # note: do not log in by yourself while using this program
+
+# required package: bs4, selenium, chromedriver
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -22,11 +24,11 @@ def get_remaining_seat(soup):
     return int(remaining_seat)
 
 def refresh_course_website(driver, crn):
-    remaining_seat = 0;
+    remaining_seat = 0
     print "start refreshing ..."
     # keep refreshing until find empty space
     while remaining_seat <= 0:
-        url = 'https://ui2web1.apps.uillinois.edu/BANPROD1/bwckschd.p_disp_detail_sched?term_in=120178&crn_in=%s' %crn
+        url = 'https://ui2web1.apps.uillinois.edu/BANPROD1/bwckschd.p_disp_detail_sched?term_in=120181&crn_in=%s' %crn
         driver.get(url)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         remaining_seat = get_remaining_seat(soup)
@@ -50,7 +52,7 @@ def log_in(username, password, driver):
     driver.find_element_by_name("BTN_LOGIN").click()
     return driver
 
-def navigate(driver, username, password, crn, major='Computer Engineering', semester='Fall 2017 - Urbana-Champaign'):
+def navigate(driver, username, password, crn, major='Computer Engineering', semester='Spring 2018 - Urbana-Champaign'):
     driver.find_element_by_link_text('Registration & Records').click()
     driver.find_element_by_link_text('Classic Registration').click()
     driver.find_element_by_link_text('Add/Drop Classes').click()
@@ -82,6 +84,7 @@ start = time.time()
 driver = webdriver.Chrome()
 driver = log_in(username, password, driver)
 refresh_course_website(driver, crn)
+
 # if empty seat found. the driver for register
 driver = log_in(username, password, driver)
 navigate(driver, username, password, crn)
