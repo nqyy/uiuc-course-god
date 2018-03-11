@@ -9,3 +9,5 @@ copyright reserved
 usage: ``python go.py netid password crn1 ...``
 
 required package: python, pip, bs4, selenium, chromedriver
+
+Packages installation guide: ``pip install requirement.txt``
