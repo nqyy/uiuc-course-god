@@ -12,7 +12,11 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 import time
 import sys
-import urllib2
+
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
 
 def get_remaining_seat(soup):
     try:
@@ -25,14 +29,15 @@ def get_remaining_seat(soup):
 
 def refresh_course_website(driver, crn):
     remaining_seat = 0
-    print "start refreshing ..."
+    print("start refreshing ...")
     # keep refreshing until find empty space
     while remaining_seat <= 0:
-        url = 'https://ui2web1.apps.uillinois.edu/BANPROD1/bwckschd.p_disp_detail_sched?term_in=120181&crn_in=%s' %crn
+        # this link needs to be updated each semester!
+        url = 'https://ui2web1.apps.uillinois.edu/BANPROD1/bwckschd.p_disp_detail_sched?term_in=120188&crn_in=%s' %crn
         driver.get(url)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         remaining_seat = get_remaining_seat(soup)
-    print "refreshing done!"
+    print("refreshing done!")
 
 def register(driver, crn, crn_arr):
     #register the course
@@ -52,7 +57,8 @@ def log_in(username, password, driver):
     driver.find_element_by_name("BTN_LOGIN").click()
     return driver
 
-def navigate(driver, username, password, crn, major='Computer Engineering', semester='Spring 2018 - Urbana-Champaign'):
+# Semester needs to be updated each semester!
+def navigate(driver, username, password, crn, major='Computer Engineering', semester='Fall 2018 - Urbana-Champaign'):
     driver.find_element_by_link_text('Registration & Records').click()
     driver.find_element_by_link_text('Classic Registration').click()
     driver.find_element_by_link_text('Add/Drop Classes').click()
@@ -70,7 +76,7 @@ crn_arr = []
 for i in range(3, len(sys.argv)):
     crn_arr.append(sys.argv[i])
 if(len(crn_arr) < 1):
-    print "crn index error"
+    print("crn index error")
 crn = sys.argv[3] #crn is the leading crn
 
 login_url = 'https://eas.admin.uillinois.edu/eas/servlet/EasLogin?redirect=https://webprod.admin.uillinois.edu/ssa/servlet/SelfServiceLogin?appName=edu.uillinois.aits.SelfServiceLogin&dad=BANPROD1'
@@ -91,6 +97,6 @@ navigate(driver, username, password, crn)
 register(driver, crn, crn_arr)
 
 msg = "time spent: %s" % (time.time() - start)
-print msg
-print "done!!!!!!!!!!!!!!!!!"
+print(msg)
+print("done!!!!!!!!!!!!!!!!!")
 
