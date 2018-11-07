@@ -33,7 +33,7 @@ def refresh_course_website(driver, crn):
     # keep refreshing until find empty space
     while remaining_seat <= 0:
         # this link needs to be updated each semester!
-        url = 'https://ui2web1.apps.uillinois.edu/BANPROD1/bwckschd.p_disp_detail_sched?term_in=120188&crn_in=%s' %crn
+        url = 'https://ui2web1.apps.uillinois.edu/BANPROD1/bwckschd.p_disp_detail_sched?term_in=120191&crn_in=%s' %crn
         driver.get(url)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         remaining_seat = get_remaining_seat(soup)
@@ -58,8 +58,11 @@ def log_in(username, password, driver):
     return driver
 
 # Semester needs to be updated each semester!
-def navigate(driver, username, password, crn, major='Computer Engineering', semester='Fall 2018 - Urbana-Champaign'):
-    driver.find_element_by_link_text('Registration & Records').click()
+def navigate(driver, username, password, crn, major='Computer Engineering', semester='Spring 2019 - Urbana-Champaign'):
+    # this url might need update
+    url = "https://ui2web1.apps.uillinois.edu/BANPROD1/twbkwbis.P_GenMenu?name=bmenu.P_StuMainMnu"
+    driver.get(url)
+    # driver.find_element_by_link_text('Registration & Records').click()
     driver.find_element_by_link_text('Classic Registration').click()
     driver.find_element_by_link_text('Add/Drop Classes').click()
     driver.find_element_by_link_text('I Agree to the Above Statement').click()
@@ -92,11 +95,9 @@ driver = log_in(username, password, driver)
 refresh_course_website(driver, crn)
 
 # if empty seat found. the driver for register
-driver = log_in(username, password, driver)
 navigate(driver, username, password, crn)
 register(driver, crn, crn_arr)
 
 msg = "time spent: %s" % (time.time() - start)
 print(msg)
 print("done!!!!!!!!!!!!!!!!!")
-
