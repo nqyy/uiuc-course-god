@@ -3,7 +3,6 @@
 # author: Tianhao Chi
 # usage: python go.py netid password crn1 crn2 ...
 # note: do not log in into the system by yourself while using this program
-# Any commercial use is prohibited
 
 # required package: bs4, selenium, chromedriver
 
