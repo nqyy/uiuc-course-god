@@ -41,7 +41,7 @@ def refresh_course_website(driver, crn_arr, cross_list):
     while True:
         for crn in crn_arr:
             # this link needs to be updated each semester!
-            url = 'https://ui2web1.apps.uillinois.edu/BANPROD1/bwckschd.p_disp_detail_sched?term_in=120191&crn_in=%s' % crn
+            url = 'https://ui2web1.apps.uillinois.edu/BANPROD1/bwckschd.p_disp_detail_sched?term_in=120198&crn_in=%s' % crn
             driver.get(url)
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             remaining_seat = get_remaining_seat(soup, cross_list)
@@ -61,17 +61,16 @@ def register(driver, crn):
 
 def log_in(username, password, driver):
     driver.get(login_url)
-    user_field = driver.find_element_by_name("inputEnterpriseId")
-    password_field = driver.find_element_by_name("password")
+    user_field = driver.find_element_by_name("USER")
+    password_field = driver.find_element_by_name("PASSWORD")
     user_field.send_keys(username)
     password_field.send_keys(password)
     driver.find_element_by_name("BTN_LOGIN").click()
     return driver
 
+
 # Semester needs to be updated each semester!
-
-
-def navigate(driver, username, password, crn, semester='Spring 2019 - Urbana-Champaign'):
+def navigate(driver, username, password, crn, semester='Fall 2019 - Urbana-Champaign'):
     # this url might need update
     url = "https://ui2web1.apps.uillinois.edu/BANPROD1/twbkwbis.P_GenMenu?name=bmenu.P_StuMainMnu"
     driver.get(url)
@@ -96,7 +95,7 @@ if(len(crn_arr) < 1):
     print("crn index error")
 
 # login url may change and might need update in the future
-login_url = 'https://eas.admin.uillinois.edu/eas/servlet/EasLogin?redirect=https://webprod.admin.uillinois.edu/ssa/servlet/SelfServiceLogin?appName=edu.uillinois.aits.SelfServiceLogin&dad=BANPROD1'
+login_url = 'https://login.uillinois.edu/auth/SystemLogin/sm_login.fcc?TYPE=33554433&REALMOID=06-a655cb7c-58d0-4028-b49f-79a4f5c6dd58&GUID=&SMAUTHREASON=0&METHOD=GET&SMAGENTNAME=-SM-dr9Cn7JnD4pZ%2fX9Y7a9FAQedR3gjL8aBVPXnJiLeXLOpk38WGJuo%2fOQRlFkbatU7C%2b9kHQgeqhK7gmsMW81KnMmzfZ3v0paM&TARGET=-SM-HTTPS%3a%2f%2fwebprod%2eadmin%2euillinois%2eedu%2fssa%2fservlet%2fSelfServiceLogin%3fappName%3dedu%2euillinois%2eaits%2eSelfServiceLogin%26dad%3dBANPROD1'
 
 username = sys.argv[1]  # netid
 password = sys.argv[2]  # password
