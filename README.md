@@ -20,7 +20,7 @@ Requirements: bs4, selenium, chromedriver (using brew cask)
 
 Usage and features
 ------------------
-``python go.py netid password CRN1 CRN2 ...``
+``python run.py netid password CRN1 CRN2 ...``
 
 Multiple courses can be put in at the same time.
 
@@ -30,8 +30,9 @@ Courses with lab/discussion section are not supported.
 
 Contributing
 ------------
-Need update for each semester. 
+Need to be updated for each semester. 
 If there is any outdated part, please make a pull request or contact the author.
+Contact me if you want to maintain this repo.
 
 email: chitianhaoxp@gmail.com
 
