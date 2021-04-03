@@ -1,13 +1,16 @@
-# course registration helper for UIUC
+# UIUC COURSE GOD
+# course registration cheat for UIUC
 # support multiple crn for different courses
 # author: Tianhao Chi
-# usage: python go.py netid password crn1 crn2 ...
+# usage: python go.py semester netid password crn1 crn2 ...
+# use semester in this format: YYYY-spring, YYYY-summer, YYYY-fall. Example: 2021-spring
 # note: do not log in into the system by yourself while using this program
 
 # required package: bs4, selenium, chromedriver
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 import time
@@ -17,6 +20,19 @@ try:
     import urllib.request as urllib2
 except ImportError:
     import urllib2
+
+
+def construct_term_in(semester):
+    # This is dark magic and you will never know
+    year = semester[:semester.find('-')]
+    season = semester[semester.find('-')+1:]
+    if season == 'spring':
+        season_num = 1
+    if season == 'summer':
+        season_num = 2
+    if season == 'fall':
+        season_num = 3
+    return 3 * int(year) + 114150 + season_num
 
 
 def get_remaining_seat(soup, cross_list):
@@ -34,14 +50,15 @@ def get_remaining_seat(soup, cross_list):
     return int(remaining_seat)
 
 
-def refresh_course_website(driver, crn_arr, cross_list):
+def refresh_course_website(driver, crn_arr, cross_list, term_in):
     remaining_seat = 0
     print("start refreshing ...")
     # keep refreshing until find empty space
     while True:
         for crn in crn_arr:
             # this link needs to be updated each semester!
-            url = 'https://ui2web1.apps.uillinois.edu/BANPROD1/bwckschd.p_disp_detail_sched?term_in=120198&crn_in=%s' % crn
+            url = 'https://ui2web1.apps.uillinois.edu/BANPROD1/bwckschd.p_disp_detail_sched?term_in=%d&crn_in=%s' % (
+                term_in, crn)
             driver.get(url)
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             remaining_seat = get_remaining_seat(soup, cross_list)
@@ -70,7 +87,12 @@ def log_in(username, password, driver):
 
 
 # Semester needs to be updated each semester!
-def navigate(driver, username, password, crn, semester='Fall 2019 - Urbana-Champaign'):
+def navigate(driver, username, password, crn):
+    year = semester[:semester.find('-')]
+    season = semester[semester.find('-')+1:]
+    season = season[0].capitalize() + season[1:]
+    semester_str = season + ' ' + year + ' - Urbana-Champaign'
+
     # this url might need update
     url = "https://ui2web1.apps.uillinois.edu/BANPROD1/twbkwbis.P_GenMenu?name=bmenu.P_StuMainMnu"
     driver.get(url)
@@ -80,7 +102,7 @@ def navigate(driver, username, password, crn, semester='Fall 2019 - Urbana-Champ
 
     # go to register page
     options = Select(driver.find_element_by_id('term_id'))
-    options.select_by_visible_text(semester)
+    options.select_by_visible_text(semester_str)
     path = '//input[@type="submit" and @value="Submit"]'
     driver.find_element_by_xpath(path).click()
 
@@ -89,7 +111,7 @@ def navigate(driver, username, password, crn, semester='Fall 2019 - Urbana-Champ
 
 # put the crn numbers into the array
 crn_arr = []
-for i in range(3, len(sys.argv)):
+for i in range(4, len(sys.argv)):
     crn_arr.append(sys.argv[i])
 if(len(crn_arr) < 1):
     print("crn index error")
@@ -97,20 +119,24 @@ if(len(crn_arr) < 1):
 # login url may change and might need update in the future
 login_url = 'https://login.uillinois.edu/auth/SystemLogin/sm_login.fcc?TYPE=33554433&REALMOID=06-a655cb7c-58d0-4028-b49f-79a4f5c6dd58&GUID=&SMAUTHREASON=0&METHOD=GET&SMAGENTNAME=-SM-dr9Cn7JnD4pZ%2fX9Y7a9FAQedR3gjL8aBVPXnJiLeXLOpk38WGJuo%2fOQRlFkbatU7C%2b9kHQgeqhK7gmsMW81KnMmzfZ3v0paM&TARGET=-SM-HTTPS%3a%2f%2fwebprod%2eadmin%2euillinois%2eedu%2fssa%2fservlet%2fSelfServiceLogin%3fappName%3dedu%2euillinois%2eaits%2eSelfServiceLogin%26dad%3dBANPROD1'
 
-username = sys.argv[1]  # netid
-password = sys.argv[2]  # password
+# semester in this format: YYYY-spring/YYYY-summer/YYYY-fall
+semester = sys.argv[1]
+username = sys.argv[2]  # netid
+password = sys.argv[3]  # password
 
 # please change to true if the course is crosslisted
 cross_list = True
 
 start = time.time()
 
+term_in = construct_term_in(semester)
+
 while len(crn_arr) != 0:
     # the driver for refresh
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(ChromeDriverManager().install())
     driver = log_in(username, password, driver)
     crn_success = ""
-    crn_success = refresh_course_website(driver, crn_arr, cross_list)
+    crn_success = refresh_course_website(driver, crn_arr, cross_list, term_in)
 
     # if empty seat found. the driver for register
     navigate(driver, username, password, crn_success)

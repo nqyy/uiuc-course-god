@@ -1,10 +1,10 @@
-UIUC course auto-register
+UIUC Course God
 =========================
 
 Introduction
 ------------
-Automatically check and register courses for students of UIUC. This software is able to bypass
-the detection system of the school in a way of refreshing and updating remaining seats rather than attempting to register courses.
+Automatically check and register courses for UIUC students. This software is able to bypass
+school's auto-detection system.
 
 Warning
 -------
@@ -12,15 +12,19 @@ This is a rule-breaking software, so please beware the risks.
 
 Requirements
 ------------
-Packages installation guide: ``pip install -r requirement.txt``
+Packages installation guide: ``pip3 install -r requirement.txt``
 
 Compatible with Python2 and Python3
 
-Requirements: bs4, selenium, chromedriver (using brew cask)
+Requirements: bs4, selenium, chromedriver (using brew cask), webdriver-manager
 
 Usage and features
 ------------------
-``python run.py netid password CRN1 CRN2 ...``
+``python run.py semester netid password CRN1 CRN2 ...``
+
+Use semester in this format: YYYY-season.
+
+Example usage: ``python run.py 2021-fall abc123 abcdefg12345 11111 22222``
 
 Multiple courses can be put in at the same time.
 
@@ -31,12 +35,12 @@ Courses with lab/discussion section are not supported.
 Contributing
 ------------
 Need to be updated for each semester. 
-If there is any outdated part, please make a pull request or contact the author.
+If there is any outdated component, please make a pull request or contact the author.
 Contact me if you want to maintain this repo.
 
-email: chitianhaoxp@gmail.com
+Email: chitianhaoxp@gmail.com
 
-wechat: chitianhao
+Wechat: chitianhao
 
 Future features
 ---------------
