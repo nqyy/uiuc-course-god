@@ -2,7 +2,7 @@
 # course registration cheat for UIUC
 # support multiple crn for different courses
 # author: Tianhao Chi
-# usage: python go.py semester netid password crn1 crn2 ...
+# usage: python run.py semester netid password crn1 crn2 ...
 # use semester in this format: YYYY-spring, YYYY-summer, YYYY-fall. Example: 2021-spring
 # note: do not log in into the system by yourself while using this program
 
@@ -13,6 +13,8 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 import time
 import sys
 
@@ -23,16 +25,18 @@ except ImportError:
 
 
 def construct_term_in(semester):
-    # This is dark magic and you will never know
+    # This is dark magic.
     year = semester[:semester.find('-')]
     season = semester[semester.find('-')+1:]
+    if season == 'winter':
+        season_num = 0
     if season == 'spring':
         season_num = 1
     if season == 'summer':
-        season_num = 2
+        season_num = 5
     if season == 'fall':
-        season_num = 3
-    return 3 * int(year) + 114150 + season_num
+        season_num = 8
+    return 120000 + int(str(year)[-2:])*10 + season_num
 
 
 def get_remaining_seat(soup, cross_list):
@@ -69,20 +73,19 @@ def refresh_course_website(driver, crn_arr, cross_list, term_in):
 
 def register(driver, crn):
     # register single course
-    xpath = "//input[@id = 'crn_id1']"
-    crn_blank = driver.find_element_by_xpath(xpath)
+    crn_blank = driver.find_element(By.ID, "crn_id1")
     crn_blank.send_keys(crn)
-    driver.find_element_by_xpath("//input[@value='Submit Changes']").click()
+    driver.find_element(By.XPATH, "//input[@value='Submit Changes']").click()
     driver.save_screenshot('screen.png')
 
 
 def log_in(username, password, driver):
     driver.get(login_url)
-    user_field = driver.find_element_by_name("USER")
-    password_field = driver.find_element_by_name("PASSWORD")
+    user_field = driver.find_element("name", "USER")
+    password_field = driver.find_element("name", "PASSWORD")
     user_field.send_keys(username)
     password_field.send_keys(password)
-    driver.find_element_by_name("BTN_LOGIN").click()
+    driver.find_element("name", "BTN_LOGIN").click()
     return driver
 
 
@@ -96,15 +99,15 @@ def navigate(driver, username, password, crn):
     # this url might need update
     url = "https://ui2web1.apps.uillinois.edu/BANPROD1/twbkwbis.P_GenMenu?name=bmenu.P_StuMainMnu"
     driver.get(url)
-    driver.find_element_by_link_text('Classic Registration').click()
-    driver.find_element_by_link_text('Add/Drop Classes').click()
-    driver.find_element_by_link_text('I Agree to the Above Statement').click()
+    driver.find_element('link text', 'Classic Registration').click()
+    driver.find_element('link text', 'Add/Drop Classes').click()
+    driver.find_element('link text', 'I Agree to the Above Statement').click()
 
     # go to register page
-    options = Select(driver.find_element_by_id('term_id'))
+    options = Select(driver.find_element(By.ID, 'term_id'))
     options.select_by_visible_text(semester_str)
     path = '//input[@type="submit" and @value="Submit"]'
-    driver.find_element_by_xpath(path).click()
+    driver.find_element(By.XPATH, path).click()
 
 # ============================================ main ===================================
 
@@ -113,7 +116,7 @@ def navigate(driver, username, password, crn):
 crn_arr = []
 for i in range(4, len(sys.argv)):
     crn_arr.append(sys.argv[i])
-if(len(crn_arr) < 1):
+if len(crn_arr) < 1:
     print("crn index error")
 
 # login url may change and might need update in the future
@@ -125,7 +128,7 @@ username = sys.argv[2]  # netid
 password = sys.argv[3]  # password
 
 # please change to true if the course is crosslisted
-cross_list = True
+cross_list = False
 
 start = time.time()
 
@@ -133,7 +136,7 @@ term_in = construct_term_in(semester)
 
 while len(crn_arr) != 0:
     # the driver for refresh
-    driver = webdriver.Chrome(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     driver = log_in(username, password, driver)
     crn_success = ""
     crn_success = refresh_course_website(driver, crn_arr, cross_list, term_in)
@@ -144,6 +147,6 @@ while len(crn_arr) != 0:
 
     msg = "time spent: %s" % (time.time() - start)
     print(msg)
-    print("crn: " + crn_success + " is done!!!!!!!!!!!!!!!!!")
+    print("crn: " + str(crn_success) + " is done!!!!!!!!!!!!!!!!!")
     crn_arr.remove(crn_success)
     driver.quit()

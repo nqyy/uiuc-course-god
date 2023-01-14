@@ -20,21 +20,20 @@ Requirements: bs4, selenium, chromedriver (using brew cask), webdriver-manager
 
 Usage and features
 ------------------
-``python run.py semester netid password CRN1 CRN2 ...``
+``python3 run.py semester netid password CRN1 CRN2 ...``
 
 Use semester in this format: YYYY-season.
 
-Example usage: ``python run.py 2021-fall abc123 abcdefg12345 11111 22222``
+Example usage: ``python3 run.py 2021-fall abc123 abcdefg12345 11111 22222``
 
 Multiple courses can be put in at the same time.
 
-Crosslist courses are supported.
+Crosslist courses are supported. However, you'll need to edit the code to do this.
 
 Courses with lab/discussion section are not supported.
 
 Contributing
 ------------
-Need to be updated for each semester. 
 If there is any outdated component, please make a pull request or contact the author.
 Contact me if you want to maintain this repo.
 
