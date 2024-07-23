@@ -49,11 +49,14 @@ def get_remaining_seat(soup, cross_list):
             remaining_seat = soup('th', attrs={'scope': 'row'})[
                 1].find_next_siblings('td')[2].string
     else:
+        print(soup('th', attrs={'scope': 'row'}))
         remaining_seat = soup('th', attrs={'scope': 'row'})[
             1].find_next_siblings('td')[2].string
+
     return int(remaining_seat)
 
 
+# https://banner.apps.uillinois.edu/StudentRegistrationSSB/ssb/searchResults/searchResults?txt_subject=ASTR&txt_courseNumber=100&txt_term=120248&startDatepicker=&endDatepicker=&uniqueSessionId=f9q0b1721353682805&pageOffset=0&pageMaxSize=10&sortColumn=subjectDescription&sortDirection=asc
 def refresh_course_website(driver, crn_arr, cross_list, term_in):
     remaining_seat = 0
     print("start refreshing ...")
@@ -65,6 +68,7 @@ def refresh_course_website(driver, crn_arr, cross_list, term_in):
                 term_in, crn)
             driver.get(url)
             soup = BeautifulSoup(driver.page_source, 'html.parser')
+            print(soup)
             remaining_seat = get_remaining_seat(soup, cross_list)
             if remaining_seat > 0:
                 print("refreshing done!")
@@ -97,9 +101,10 @@ def navigate(driver, username, password, crn):
     semester_str = season + ' ' + year + ' - Urbana-Champaign'
 
     # this url might need update
-    url = "https://ui2web1.apps.uillinois.edu/BANPROD1/twbkwbis.P_GenMenu?name=bmenu.P_StuMainMnu"
+    url = "https://experience.elluciancloud.com/illinois/"
     driver.get(url)
-    driver.find_element('link text', 'Classic Registration').click()
+    driver.find_element('link text', 'Registration and Records').click()
+    driver.find_element('link text', 'Class Registration').click()
     driver.find_element('link text', 'Add/Drop Classes').click()
     driver.find_element('link text', 'I Agree to the Above Statement').click()
 
@@ -120,7 +125,7 @@ if len(crn_arr) < 1:
     print("crn index error")
 
 # login url may change and might need update in the future
-login_url = 'https://login.uillinois.edu/auth/SystemLogin/sm_login.fcc?TYPE=33554433&REALMOID=06-e5b1520c-d10f-419a-bce9-a59c4292488e&GUID=&SMAUTHREASON=0&METHOD=GET&SMAGENTNAME=-SM-J9ldxGzDajRVOCvCtHkKc2Pex3VVR3ifECA%2b1KBtU5c%2fEIF8mWDOJjqUJhESA8EV&TARGET=-SM-HTTPS%3a%2f%2flogin%2euillinois%2eedu%2faffwebservices%2fafflogin%2fsdnp%2fredirect%2ejsp%3fSPID%3dhttps-%3A-%2F-%2Feis%2eapps%2euillinois%2eedu-%2Fbanner%26SAMLRequest%3djZFLb8IwEITv-%2FRWR7-%2BRFCKlFglAREhKVEI8eeqkcZwFLjp16bdqfX0MbFfVSjivtzOx-%2BM5l-%2BtjI4g0GhVUmSMCYBKK4boY4l2e8Wg4JMq4cJslZ2dObsSW3g3QHaYIYIxnrZk1boWjBbMGfBYb9ZleRkbYc0ikBgyLoOQyekFEr7ERoXcd22WjFvR4K5NxOK2esBvU7qo1B-%2FROxw-%2BIAav1Mw6lwtBY8ul6WIerpdL-%2BflP7k1UwoMCRbacLh-%2BU5IDkwgk8GLyxgtW5zzO05xBHQMvCp5ko6SJ-%2BXAYN-%2BPcr-%2BGaIYoz-%2FAoRHSwVWqZsSdI4zQbxeBCPdklBk4xmwzB9HL2S4KWHnF4ge-%2BwK6RVrSZxRVDMUSBVrAanldDt7XlG-%2FSTujreZakuqnhGueud-%2BA9T2R6i46k-%2Bg2p-%2BrH2-%2B6rLw-%3D-%3D%26RelayState%3def8234db--ae82--4021--bb12--33df0f18161b%26SigAlg%3dhttp-%3A-%2F-%2Fwww%2ew3%2eorg-%2F2000-%2F09-%2Fxmldsig-%23rsa--sha1%26Signature%3dSdLHy6JnG02fs9tHO8zuSS9-%2F56XcpCRbuqPuypd8n7AJSEAvRVgA2o0TPIvy08gMrGGF9wq2OiGI5qQIqiqwFN2L3vFARskP2P294Z4A-%2FQh-%2FYa3soT8Lgu9uADoZvrGSpS-%2F9CsIE59nmHOftt2FSuuxbMte-%2BwbYThylIBGV-%2Bo9fg-%2Bft6u6PazxuFQL2-%2BgQ8FK6ZKlrgUedvkfufvRPvWyKI6HuuRlb4v-%2FG835zYIEgRIraWJQtygLIjiR5PeoWpiSUae1292HXzvvtGJ8Uslql7lQZW4eLfo8CkzJ96ELPvjasSLTkhmF9KtOCuZkLjWT2PPtUE1C8Bsk8oeAy-%2BYNQ-%3D-%3D%26SMPORTALURL%3dhttps-%3A-%2F-%2Flogin%2euillinois%2eedu-%2Faffwebservices-%2Fpublic-%2Fsaml2sso'
+login_url = 'https://experience.elluciancloud.com/illinois/'
 
 # semester in this format: YYYY-spring/YYYY-summer/YYYY-fall
 semester = sys.argv[1]
