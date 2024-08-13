@@ -49,11 +49,14 @@ def get_remaining_seat(soup, cross_list):
             remaining_seat = soup('th', attrs={'scope': 'row'})[
                 1].find_next_siblings('td')[2].string
     else:
+        print(soup('th', attrs={'scope': 'row'}))
         remaining_seat = soup('th', attrs={'scope': 'row'})[
             1].find_next_siblings('td')[2].string
+
     return int(remaining_seat)
 
 
+# https://banner.apps.uillinois.edu/StudentRegistrationSSB/ssb/searchResults/searchResults?txt_subject=ASTR&txt_courseNumber=100&txt_term=120248&startDatepicker=&endDatepicker=&uniqueSessionId=f9q0b1721353682805&pageOffset=0&pageMaxSize=10&sortColumn=subjectDescription&sortDirection=asc
 def refresh_course_website(driver, crn_arr, cross_list, term_in):
     remaining_seat = 0
     print("start refreshing ...")
@@ -65,6 +68,7 @@ def refresh_course_website(driver, crn_arr, cross_list, term_in):
                 term_in, crn)
             driver.get(url)
             soup = BeautifulSoup(driver.page_source, 'html.parser')
+            print(soup)
             remaining_seat = get_remaining_seat(soup, cross_list)
             if remaining_seat > 0:
                 print("refreshing done!")
@@ -97,9 +101,10 @@ def navigate(driver, username, password, crn):
     semester_str = season + ' ' + year + ' - Urbana-Champaign'
 
     # this url might need update
-    url = "https://ui2web1.apps.uillinois.edu/BANPROD1/twbkwbis.P_GenMenu?name=bmenu.P_StuMainMnu"
+    url = "https://experience.elluciancloud.com/illinois/"
     driver.get(url)
-    driver.find_element('link text', 'Classic Registration').click()
+    driver.find_element('link text', 'Registration and Records').click()
+    driver.find_element('link text', 'Class Registration').click()
     driver.find_element('link text', 'Add/Drop Classes').click()
     driver.find_element('link text', 'I Agree to the Above Statement').click()
 
@@ -120,7 +125,7 @@ if len(crn_arr) < 1:
     print("crn index error")
 
 # login url may change and might need update in the future
-login_url = 'https://login.uillinois.edu/auth/SystemLogin/sm_login.fcc?TYPE=33554433&REALMOID=06-a655cb7c-58d0-4028-b49f-79a4f5c6dd58&GUID=&SMAUTHREASON=0&METHOD=GET&SMAGENTNAME=-SM-dr9Cn7JnD4pZ%2fX9Y7a9FAQedR3gjL8aBVPXnJiLeXLOpk38WGJuo%2fOQRlFkbatU7C%2b9kHQgeqhK7gmsMW81KnMmzfZ3v0paM&TARGET=-SM-HTTPS%3a%2f%2fwebprod%2eadmin%2euillinois%2eedu%2fssa%2fservlet%2fSelfServiceLogin%3fappName%3dedu%2euillinois%2eaits%2eSelfServiceLogin%26dad%3dBANPROD1'
+login_url = 'https://experience.elluciancloud.com/illinois/'
 
 # semester in this format: YYYY-spring/YYYY-summer/YYYY-fall
 semester = sys.argv[1]
